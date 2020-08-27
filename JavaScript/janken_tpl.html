@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="js/jquery-2.1.3.min.js"></script>
+<link rel="stylesheet" href="css/sample.css">
+<title>じゃんけん</title>
+</head>
+<body>
+
+<header>
+  <h1>じゃんけん</h1>
+</header>
+
+<main id="janken">
+  <h4>下の画像をクリックしてね</h4>
+  <ul>
+    <li id="gu_btn" ><div><img src="img/g.jpeg"></div></li>
+    <li id="cho_btn" ><div><img src="img/c.jpeg"></div></li>
+    <li id="par_btn" ><div><img src="img/p.jpeg"></div></li>
+  </ul>
+  <div>コンピュータの出した手は？「<span id="pc_hands">なに？</span>」</div>
+  <div id="judgment">判定は？</div>
+  <ul>
+      <li id="w"></li><div>勝</div>
+      <li id="l"></li><div>敗</div>
+      <li id="d"></li><div>分け</div>
+  </ul>
+  <div>現在の勝率は<span id="winrate">？</span></div>
+
+  <span hidden>グーの数</span><div id hidden="gu_kazu">0</div>
+  <span hidden>チョキの数</span><div id hidden="cho_kazu">0</div>
+  <span hidden>パーの数</span><div id hidden="pa_kazu">0</div>
+<table>
+  <td>ただ今、</td>
+  <td id="max">0</td>
+  <td>回戦まで終了</td>
+</table>
+  <input type="button"  value="RGからのコメント" id="rg">
+  <input type="button"  value="リセット" onclick="re()">
+
+</main>
+
+<footer></footer>
+<script>
+//じゃんけん用のSCRIPTを書いてください
+
+
+let total_w=0;//勝率を出すのに使う
+let total_l=0;//勝率を出すのに使う
+let total_d=0;//勝率を出すのに使う
+
+let cnt_gu=0;//グーチョキパーの回数を出すのに使う
+let cnt_cho=0;//グーチョキパーの回数を出すのに使う
+let cnt_pa=0;//グーチョキパーの回数を出すのに使う
+let max = 0;//じゃんけんの回数を数えるのに使う
+
+const bgm0 = new Audio("music/rg.mp3");//RGの効果音
+  rg.addEventListener("click", ()=>{
+  bgm0.play();  
+});
+
+$("#rg").on("click",function(){
+let kekka = Math.max(cnt_gu,cnt_cho,cnt_pa);
+console.log(kekka);
+  if(kekka == cnt_gu){
+    alert("グー出しがち")
+  }
+  if(kekka == cnt_cho){
+    alert("チョキ出しがち")
+  }
+  if(kekka == cnt_pa){
+    alert("パー出しがち")
+  }
+});
+
+
+//グーをクリックしたら
+  $("#gu_btn").on("click",function(){
+
+let winrate = total_w / (total_w + total_l + total_d);//ここから勝率の計算
+console.log(winrate);
+let number = winrate;
+let result = number.toFixed(3);
+$("#winrate").html(result);//ここまで勝率の計算
+
+
+cnt_gu +=1;
+$("#gu_kazu").text(cnt_gu);
+max +=1;
+$("#max").text(max);
+
+
+const gu = 0
+const com = Math.floor( Math.random() * 3 );
+  if (com==0){
+    $("#pc_hands").html('<img src="img/g.jpeg">');
+  }
+  if (com==1){
+    $("#pc_hands").html('<img src="img/c.jpeg">');
+  }
+  if (com==2){
+    $("#pc_hands").html('<img src="img/p.jpeg">');
+  }
+
+  if (gu-com==-2){
+    $("#judgment").html('あなたの負け');//com-par
+    total_l += 1
+    $("#l").html(+total_l);
+  }
+  if (gu-com==-1){
+    $("#judgment").html('あなたの勝ち');//com-cho
+    total_w += 1
+    $("#w").html(+total_w);
+  }
+  if (gu-com==0){
+    $("#judgment").html('あいこ');//com-gu
+    total_d += 1
+    $("#d").html(+total_d);
+  }
+});
+
+const bgm1 = new Audio("music/gu.mp3");//グーの効果音
+  gu_btn.addEventListener("click", ()=>{
+  bgm1.play();  
+});
+
+
+
+//チョキをクリックしたら
+$("#cho_btn").on("click",function(){
+
+let winrate = total_w / (total_w + total_l + total_d);//ここから勝率の計算
+console.log(winrate);
+let number = winrate;
+let result = number.toFixed(3);
+$("#winrate").html(result);//ここまで勝率の計算
+
+
+cnt_cho +=1;
+$("#cho_kazu").text(cnt_cho);
+max +=1;
+$("#max").text(max);
+
+
+const cho = 1
+const com = Math.floor( Math.random() * 3 );
+  if (com==0){
+    $("#pc_hands").html('<img src="img/g.jpeg">');
+  }
+  if (com==1){
+    $("#pc_hands").html('<img src="img/c.jpeg">');
+  }
+  if (com==2){
+    $("#pc_hands").html('<img src="img/p.jpeg">');
+  }
+
+  if (cho-com==1){
+    $("#judgment").html('あなたの負け');//com-par
+    total_l += 1
+    $("#l").html(+total_l);
+  }
+  if (cho-com==-1){
+    $("#judgment").html('あなたの勝ち');//com-cho
+    total_w += 1
+    $("#w").html(+total_w);
+  }
+  if (cho-com==0){
+    $("#judgment").html('あいこ');//com-gu
+    total_d += 1
+    $("#d").html(+total_d);
+  }
+
+});
+
+const bgm2 = new Audio("music/cho.mp3");//チョキの効果音
+  cho_btn.addEventListener("click", ()=>{
+  bgm2.play();  
+});
+
+
+
+//パーをクリックしたら
+$("#par_btn").on("click",function(){
+
+let winrate = total_w / (total_w + total_l + total_d);//ここから勝率の計算
+console.log(winrate);
+let number = winrate;
+let result = number.toFixed(3);
+$("#winrate").html(result);//ここまで勝率の計算
+
+cnt_pa +=1;
+$("#pa_kazu").text(cnt_pa);
+max +=1;
+$("#max").text(max);
+
+
+const par = 2
+const com = Math.floor( Math.random() * 3 );
+  if (com==0){
+    $("#pc_hands").html('<img src="img/g.jpeg">');
+  }
+  if (com==1){
+    $("#pc_hands").html('<img src="img/c.jpeg">');
+  }
+  if (com==2){
+    $("#pc_hands").html('<img src="img/p.jpeg">');
+  }
+
+  if (par-com==1){
+    $("#judgment").html('あなたの負け');//com-par
+    total_l += 1
+    $("#l").html(+total_l);
+  }
+  if (par-com==2){
+    $("#judgment").html('あなたの勝ち');//com-cho
+    total_w += 1
+    $("#w").html(+total_w);
+  }
+  if (par-com==0){
+    $("#judgment").html('あいこ');//com-gu
+    total_d += 1
+    $("#d").html(+total_d);
+  }
+  
+});
+
+const bgm3 = new Audio("music/pa.mp3");//パーの効果音
+  par_btn.addEventListener("click", ()=>{
+  bgm3.play();
+});
+
+function re(){
+  location.reload();
+}
+
+
+
+
+</script>
+
+</body>
+</html>
