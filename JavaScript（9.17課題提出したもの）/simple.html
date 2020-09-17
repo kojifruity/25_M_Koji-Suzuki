@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Chatアプリ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+<div>
+    <div id="output" class="output" style= "height: 300px; overflow:auto;border:1px solid red;"></div>
+    <div>名前：<input type="text" id="uname"></div>
+        <div>
+            <textarea id="text"  class="text_a" cols="30" rows="10"></textarea>
+            <button id="send">送信</button>
+        </div>
+
+</div>
+
+<!--/ コンテンツ表示画面 -->
+<!-- <div>
+  <ul id="all">
+  <input type="checkbox"><li class="imgs" data-img="0"><img src="imgs/buke.png" width="100"></li>
+  <input type="checkbox"><li class="imgs" data-img="1"><img src="imgs/tuku.jpg" width="100"></li>
+  <input type="checkbox"><li class="imgs" data-img="2"><img src="imgs/caram.png" width="100"></li>
+  </ul>
+</div> -->
+
+<!-- //音声入力のボタン -->
+<button id="start-btn">音声入力【開始】</button>
+<button id="stop-btn">音声入力【終了】</button>
+<!-- <div id="result-div"></div> -->
+<!-- //参照URLはhttps://qiita.com/hmmrjn/items/4b77a86030ed0071f548 -->
+
+
+
+<table>
+  <tr>
+  <td><input type="checkbox" id="icon1"></td><td class="imgs" data-img="0"><img src="imgs/buke.png" width="100"></td>
+  <td><input type="checkbox" id="icon2"></td><td class="imgs" data-img="1"><img src="imgs/tuku.jpg" width="100"></td>
+  <td><input type="checkbox" id="icon3"></td><td class="imgs" data-img="2"><img src="imgs/caram.png" width="100"></td>
+  </tr>
+</table>
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **--> 
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.database().ref();//.ref()=ユニークキーを自動で振ってください。()内に''で名前を振ることができる。
+
+  //音声入力
+  const startBtn = document.querySelector('#start-btn');
+  const stopBtn = document.querySelector('#stop-btn');
+  const resultDiv = document.querySelector('#text');//音声入力した文字がテキストエリアに飛ぶ
+
+  SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
+  let recognition = new SpeechRecognition();
+
+  recognition.lang = 'ja-JP';
+  recognition.interimResults = true;
+  recognition.continuous = true;
+
+  let finalTranscript = ''; // 確定した(黒の)認識結果
+
+  recognition.onresult = (event) => {
+    let interimTranscript = ''; // 暫定(灰色)の認識結果
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      let transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript = transcript;
+      }
+    }
+    // resultDiv.innerHTML = finalTranscript + '<i style="color:#ddd;">' + interimTranscript + '</i>'　本当は←だったけど、今回はテキストエリアに表示するため使わなかった。
+    resultDiv.innerHTML = finalTranscript + interimTranscript;
+  }
+
+  startBtn.onclick = () => {
+    recognition.start();
+  }
+  stopBtn.onclick = () => {
+    recognition.stop();
+  }
+  //ここまでが音声入力
+
+  //アイコン処理
+  let d=0;
+  const img = ["buke.png","tuku.jpg","caram.png"];
+  $(".img").on("click",function(){
+  d=$(this).attr("data-img");
+  });
+
+//関数定義       関数を作るときはfunction xx (){}
+function send(){
+        var now = new Date();//ここからは時間の表示
+        var year = now.getFullYear();
+        var mon = now.getMonth()+1; //１を足すこと
+        var day = now.getDate();
+        var hour = now.getHours();
+        var min = now.getMinutes();
+        var sec = now.getSeconds();
+        var t = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒";
+        const time = $("#view_time").val();
+        const times = t
+
+    //メッセージ送信
+        const uname = $("#uname").val();
+        const text = $("#text").val();
+        const msg = {
+            icon:d,
+            uname:uname,//プロパティ:変数 の順
+            text:text, //プロパティ:変数 の順
+            now:t
+          }
+        $("#text").val('');//送信と同時にテキストエリアの文を消去
+        ref.push(msg);
+        }
+
+  //文字を送信すると一番下へ移動する
+  $("#send").on("click",function(){
+    send();
+    // const lastElement = document.querySelector("#output").lastElementChild//最後の要素を取得
+    // lastElement.scrollIntoView({behavior: "smooth"})//最後の要素が見えるまでスクロール
+
+    // const psconsole = $('#output');
+    //   psconsole.scrollTop(
+    //   psconsole[0].scrollHeight - psconsole.height()
+    // );
+  });
+
+
+//受信処理
+ref.on("child_added",function(data){
+    const v = data.val();//送信されたObjectを取得
+    const k = data.key;//ユニークキーの取得
+    const n = data.val();
+    const h = '<img src="imgs/'+img[v.icon]+'" width="100"><br>'+v.uname+'<br>'+n.now+'<br>'+v.text+'</p>';
+    $("#output").append( h );
+    $('#output').each(function(){
+      $(this).scrollTop($(this).prop('scrollHeight')) //受信処理をしたら、メッセージの一番下に移動する
+    });
+});
+
+// '<img src="imgs/'+img[v.icon]+'" width="100"><br>'+v.uname+'<br>'+n.now+'<br>'+v.text+'</p>';
+
+//イベント情報取得
+$("#text").on("keydown",function(e){//e=eventの略
+    console.log(e);
+    if(e.keyCode == 13){
+      send();
+    // const uname = $("#uname").val();
+    // const text = $("#text").val();
+    // const msg = {
+    //     uname:uname,//プロパティ:変数 の順
+    //     text:text, //プロパティ:変数 の順
+    //     now:t
+    //   }
+    // ref.push(msg);
+    }
+    $("#text").val('');//送信と同時にテキストエリアの文を消去
+
+  });
+</script>
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
