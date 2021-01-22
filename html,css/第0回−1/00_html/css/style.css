@@ -1,9 +1,0 @@
-/* class [.]ドットを先頭につける*/
-/* h1 class="a" h2 class="b" */
-.a { 
-    /* c + tabキー colorが入る */
-    color: red;
-}
-.b { 
-    color: blue;
-}
