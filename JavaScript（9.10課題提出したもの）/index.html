@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>myMemoPad</title>
+<script src="js/jquery-2.1.3.min.js"></script>
+<link rel="stylesheet" href="css/sample.css">
+</head>
+<body>
+<header>
+<h1>MemoPad</h1>
+</header>
+<main>
+
+    <input type="text" id="key" placeholder=ここはタイトル>
+    <!-- placeholderで文字を入れられる -->
+    <!-- <input type="button" id="btn_t" value="クリア"> -->
+
+    <textarea id="memo" placeholder=本文></textarea>
+    
+
+    <span id="view_time"></span>
+
+    <ul>
+        <li id="save">保存</li>
+        <li id="1_clear">最新の投稿を削除</li>
+        <!-- <li id="ch_clear">チェックしたものだけ削除</li> -->
+        <li id="clear">全削除</li>
+        <li id="reload">リロード</li>
+    </ul>
+
+</main>
+<input type="button" id="btn_all" value="全部にチェック">
+<input type="button" id="btn_0" value="チェックを全てはずす">
+<input type="button" id="btn_check" value="チェックしたものを削除">
+
+
+<table id="list" class="event_tb">
+<!-- ここに追加データが挿入される -->
+
+</table>
+
+<p id="result"></p>
+
+<script>
+// //タイトルクリアボタン
+// $("#btn_t").on("click",function(){
+//     $("#key").val('');//←入力したテキストを消す
+// });
+// //文章クリアボタン
+// $("#btn_m").on("click",function(){
+//     $("#memo").val('');//←入力したテキストを消す
+// });
+
+
+//1.Save クリックイベント
+$("#save").on("click",function(){
+    const key = $("#key").val();
+    const memo = $("#memo").val();
+    localStorage.setItem(key,memo)
+    const html = '<tr><td>'+key+'</td><td>'+memo+'</td></tr>';
+    // console.log(html);
+    // $("#list").prepend(html);
+    // alert("OK");
+
+    var now = new Date();//ここからは時間の表示
+    var year = now.getFullYear();
+    var mon = now.getMonth()+1; //１を足すこと
+    var day = now.getDate();
+    var hour = now.getHours();
+    var min = now.getMinutes();
+    var sec = now.getSeconds();
+    var t = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒";
+    const time = $("#view_time").val();
+    localStorage.setItem(time,Date);
+    const times = t
+    // console.log(t);
+
+    const chb = '<input type="checkbox" id="chb" name="chbx">';//チェックボックス
+    const de_btn = '<input type="button" id="del" value="削除">';//削除ボタン
+    const html2 = '<tr><td>'+ chb +'</td><td>'+key+'</td><td>'+memo+'</td><td>'+ times +'</td><td>'+ de_btn +'</td></tr>';
+    console.log(html2);
+    $("#list").prepend(html2);
+
+    $("#key").val('');//←入力したテキストを消す
+    $("#memo").val('');//←入力したテキストを消す
+
+});
+
+
+//最新の投稿をclear クリックイベント
+$("#1_clear").on("click",function(){
+    const table = $("#list");//リストに情報を取りに行く
+    const li = table[0];//tableリスト１行目を見る
+    const clear_1 = localStorage.key(0);//リスト１行目のキーを取得する
+    let result = window.confirm('最新の情報を本当に削除しますか？');
+        if( result ) {
+            localStorage.removeItem(clear_1);//当該の情報を削除
+            list.deleteRow(0);   //リスト１行目を削除
+        }
+        else {
+            return;
+        } 
+});
+
+// 削除ボタンで行を削除 クリックイベント
+$("#del").on("click",function(){
+    const table = $("#list");//リストに情報を取りに行く
+
+
+});
+
+
+// チェックしたものだけ削除 クリックイベント
+$("#btn_check").on("click",function(){
+    const table = $("#list");//リストに情報を取りに行く
+    const chbx = '<input type="checkbox" checked="()" name="chbx" id="chb" value="memo">';
+    // let aaa = $("[name=chbx]:checked").val()//チェックボックスが機能しているか調べた
+    // console.log(aaa);//チェックボックスが機能しているか調べた
+
+    localStorage.getItem(key);
+    for (let i = 0; i < chbx.length; i++){ //ループの式
+    if("[name=chbx]:checked".checked){
+        localStorage.removeItem(chbx);
+    }
+    };
+});
+
+
+
+//全てにチェックを入れる クリックイベント
+$("#btn_all").on("click",function(){
+    const chbx = '<input type="checkbox" id="chb" name="chbx" value="memo">';//リストに情報を取りに行く
+    for (let i = 0; i < chbx.length; i++){
+        //ここに条件式が入るはず。エラーが出ているがクリックイベントが動く//
+        chb[i].checked = true;
+    }
+});
+
+
+//全てにチェックをはずす クリックイベント
+$("#btn_0").on("click",function(){
+    const chbx = '<input type="checkbox" id="chb" name="chbx" value="memo">';//リストに情報を取りに行く
+    for (let i = 0; i < chbx.length; i++){
+        //ここに条件式が入るはず。エラーが出ているがクリックイベントが動く//
+        chb[i].checked = false;
+    }
+});
+
+
+//2.全削除 クリックイベント
+$("#clear").on("click",function(){
+    let result = window.confirm('本当に削除しますか？');
+        if( result ) {
+            // console.log('OKがクリックされました');
+            localStorage.clear();
+            $("#list").empty(); //←これはリスト内を削除。//remove();はリストごと削除するので、注意。
+        }
+        else {
+            return;
+        } 
+});
+
+
+//3.ページ読み込み：保存データ取得表示
+for(let i=0; i<localStorage.length; i++){
+    const key = localStorage.key(i);
+    const memo = localStorage.getItem(key);
+}
+
+
+//リロードボタン
+$("#reload").on("click",function(){
+    let result = window.confirm('リロードしますか？')
+        if(result) {
+            window.location.reload();
+        }
+        else{
+            return;
+        }
+
+});
+
+
+</script>
+<footer><small>G's</small></footer>
+</body>
+</html>

@@ -1,0 +1,43 @@
+.a {
+    color: blue;
+    width: 1024px;
+}
+.b {
+    color: red;
+    height: 64px;
+    font-size: small;
+}
+.c {
+    color: yellow; background-color: black;
+    opacity: 0.5;
+    width: 1024px;
+}
+.d {
+    color: gray;
+    background: #000;
+    font-weight: bolder;
+    box-shadow: 10px 10px 10px gray;
+    width: 400px;
+    border:solid 10px gold;
+}
+.p {
+    text-shadow: 3px 3px 3px blue;
+}
+.e {
+    width: 1024px;
+    line-height: 15px;
+    letter-spacing: 10px;
+}
+.g {
+    width: 64px;
+    font-size: 20px;
+    background: greenyellow;
+    border-radius: 50px 50px 50px 50px
+}
+.f {
+    width: 64px;
+    font-size: 24px;
+    background: greenyellow;
+    padding: 2px 12px;
+    border: double 12px white
+}
